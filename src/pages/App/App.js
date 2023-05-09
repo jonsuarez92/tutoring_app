@@ -1,7 +1,7 @@
 import './App.css';
 import { useState } from 'react'
 import PetHotels from '../PetHotels/PetHotels';
-import PetResturants from '../PetResturants/PetResturants';
+import PetRestaurants from '../PetRestaurants/PetRestaurants';
 import { Routes, Route } from 'react-router-dom'
 
 
@@ -10,7 +10,7 @@ function App() {
     <main className="App">
       <Routes>
         <Route path='/petHotels' element={<PetHotels />} />
-        <Route path='/petResturants' element={<PetResturants />} />
+        <Route path='/petRestaurants' element={<PetRestaurants />} />
       </Routes>
     </main>
   );
