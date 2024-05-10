@@ -1,26 +1,25 @@
 import React, { useState } from 'react';
-import './signup.css';
+import './login.css';
 import Axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 
-const Signup = () => {
-    const [username, setUsername] = useState('');
+const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
     const navigate = useNavigate()
 
+    // Axios.defaults.withCredentials = true;
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await Axios.post('/api/users/signup', {
-                username,
+            const response = await Axios.post('/api/users/login', {
                 email,
                 password,
             });
             console.log(response.data);
             if (response.data.status) {
-                navigate('/login')
+                navigate('/home')
             }
         } catch (error) {
             console.error(error);
@@ -30,9 +29,7 @@ const Signup = () => {
     return (
         <div className='signup_container'>
             <form className='signup_form' onSubmit={handleSubmit}>
-                <h2>Signup</h2>
-                <label htmlFor="username">Username</label>
-                <input type="text" placeholder='Username' value={username} onChange={(e) => setUsername(e.target.value)} />
+                <h2>Login</h2>
 
                 <label htmlFor="email">Email</label>
                 <input type="text" placeholder='Email' value={email} onChange={(e) => setEmail(e.target.value)} />
@@ -40,11 +37,12 @@ const Signup = () => {
                 <label htmlFor="password">Password</label>
                 <input type="password" placeholder='Password' value={password} onChange={(e) => setPassword(e.target.value)} />
 
-                <button type='submit'>Signup</button>
-                <p>Have an account? <Link to="/login">Login</Link></p>
+                <button type='submit'>Login</button>
+                <p><Link to='/FogotPassword'>Forgot password</Link></p>
+                <p> Don't Have Account? <Link to="/signup">Sign Up</Link></p>
             </form>
         </div>
     );
 };
 
-export default Signup;
+export default Login;
