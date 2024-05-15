@@ -39,7 +39,7 @@ router.post('/login', async (req, res) => {
     if (!validPassword) {
         return res.status(400).json({ message: "Password incorrect" });
     }
-    const token = jwt.sign({ username: user.name }, process.env.key, { expiresIn: '1h' })
+    const token = jwt.sign({ username: user.name }, process.env.KEY, { expiresIn: '1h' })
     // res.cookie('token', token, { httpOnly: true, maxAge: 360000 })
     return res.json({ status: true, message: 'login successfully' })
 
@@ -52,7 +52,7 @@ router.post('/FogotPassword', async (req, res) => {
         if (!user) {
             return res.status(400).json({ message: "User not registered" });
         }
-        const token = jwt.sign({ username: user.name }, process.env.key, { expiresIn: '1h' });
+        const token = jwt.sign({ username: user.name }, process.env.KEY, { expiresIn: '1h' });
         console.log("Generated token:", token); // Log the generated token for debugging
 
         var transporter = nodemailer.createTransport({
@@ -67,7 +67,7 @@ router.post('/FogotPassword', async (req, res) => {
             from: 'jon.suarez92@gmail.com',
             to: email,
             subject: 'Reset Password',
-            html: `<p>Click <a href="http://yourdomain.com/api/users/forgotpassword/${token}">here</a> to reset your password.</p>`
+            html: `<p>Click <a href="http://localhost:3000/resetPassword/${token}">here</a> to reset your password.</p>`
         };
 
         transporter.sendMail(mailOptions, function (error, info) {
@@ -84,5 +84,29 @@ router.post('/FogotPassword', async (req, res) => {
         return res.status(500).json({ message: "Server error" });
     }
 })
+
+router.post('/resetPassword/:token', async (req, res) => {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    try {
+        // Verify the token and extract the userId
+        const decoded = jwt.verify(token, process.env.KEY);
+        const userId = decoded.userId;
+
+        // Hash the new password
+        const hashPassword = await bcrypt.hash(password, 10);
+
+        // Update the user's password in the database
+        await User.findByIdAndUpdate(userId, { password: hashPassword });
+
+        // Return a success message
+        return res.json({ status: true, message: "Password updated successfully" });
+    } catch (err) {
+        // If there's an error (e.g., token invalid or expired), return an error message
+        return res.status(400).json({ status: false, message: "Invalid or expired token" });
+    }
+});
+
 
 module.exports = router;
